@@ -1,5 +1,7 @@
 import pandas as pd
 import math
+from itertools import product
+
 
 def extract_timestamp_rate(df: pd.DataFrame):
     """
@@ -47,19 +49,12 @@ def convert_from_raw(raw: pd.DataFrame, column_names: list[str], subject_num: in
     return df
 
 
-def generate_fetch_objects(base_url: str, subject_nums: list[int], signals: list[str]) -> list[dict]:
+def generate_fetch_objects(base_url: str, subjects: list[str]) -> list[dict]:
     """
     Generates a list of fetch objects that can be used to fetch the data from the server.
     """
-    fetch_objects = []
-
-    for subject_num in subject_nums:
-        for signal in signals:
-            fetch_objects.append({
-                'url': f'{base_url}/{subject_num}/{signal}',
-                'subject_num': subject_num,
-                'signal': signal
-            })
+    signals = ["HR.csv", "ACC.csv", "BVP.csv", "EDA.csv", "TEMP.csv"]
+    fetch_objects = [{ "url": "/".join([base_url] + list(i)), "subject": i[0], "signal": i[1] } for i in product(subjects, signals)]
 
     return fetch_objects
 
@@ -123,13 +118,13 @@ def fill_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def generate_tag_objects(base_url: str, subject_nums: list[int]) -> list[dict]:
+def generate_tag_objects(base_url: str, subjects: list[str]) -> list[dict]:
     """
     Fetches the tag objects from the server.
     """
-    tags = [f"tags_{i}.csv" for i in subject_nums]
+    tags = [f"tags_{i}.csv" for i in subjects]
 
-    tag_objects = [{ "url": "/".join([base_url] + list(i)), "subject": i[0], "tag": i[1] } for i in zip(subject_nums, tags)]
+    tag_objects = [{ "url": "/".join([base_url] + list(i)), "subject": i[0], "tag": i[1] } for i in zip(subjects, tags)]
 
     return tag_objects
 
