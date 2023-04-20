@@ -78,6 +78,7 @@ def concatenate_dataframe_from_fetch_objects(fetch_objects: list[dict]) -> tuple
     bvp_df = pd.DataFrame(columns=signal_columns['BVP.csv'])
 
     for i in fetch_objects:
+        print(f"Fetching {i['signal']} for subject {i['subject']}")
         raw = pd.read_csv(i["url"], header=None)
         column_names = signal_columns[i["signal"]]
 
